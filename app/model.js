@@ -61,10 +61,10 @@ var UserSchema = new Schema({
 
     name : { type: String, required: true, validate: nameValidator },
     email : { type: String, required: true, lowercase:true, unique: true, validate: emailValidator },
-    mobile : { type: String, required: true, unique: true, validate: mobileValidator },
-    gender : { type: String, require: true },
-    password : { type: String, required: true, select: false, validate: passwordValidator },
-    address : { type: String, require: true },
+    mobile : { type: String },
+    gender : { type: String },
+    password : { type: String, select: false },
+    address : { type: String },
 });
 
 UserSchema.plugin(titlize, {

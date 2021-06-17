@@ -2,6 +2,8 @@ var User = require('../app/model');
 var path = require("path");
 var jwt = require('jsonwebtoken');
 var secret = "harry";
+const {OAuth2Client} = require('google-auth-library');
+const client = new OAuth2Client("927461945891-9jotg3r55pkvia1093qr7bjsckcnbl2l.apps.googleusercontent.com");
 
 module.exports = function(router){
 
@@ -71,6 +73,58 @@ module.exports = function(router){
                 }
             }   
         });
+    });
+
+    router.post('/authenticate-google', function(req, res){
+        let google_token = req.body.tokenId;
+        if(google_token == '') {
+            res.json({ success: false, message: 'invaild login'});
+        } else {
+            async function verify() {
+                const ticket = await client.verifyIdToken({
+                    idToken: google_token,
+                    audience: "927461945891-9jotg3r55pkvia1093qr7bjsckcnbl2l.apps.googleusercontent.com",  // Specify the CLIENT_ID of the app that accesses the backend
+                    // Or, if multiple clients access the backend:
+                    //[CLIENT_ID_1, CLIENT_ID_2, CLIENT_ID_3]
+                });
+                const payload = ticket.getPayload();
+
+                if (payload.iss !== 'accounts.google.com' && payload.aud !== "927461945891-9jotg3r55pkvia1093qr7bjsckcnbl2l.apps.googleusercontent.com") {
+                    // return res.status(400).json({ status: 'error', error: 'Bad Request' });
+                    return res.json({ success: false, message: 'invaild login'});
+                } else {
+                    const userid = payload['sub'];
+                    const useremail = payload['email'];
+                    // console.log(payload);
+                    User.findOne({email: useremail}).select('email').exec(function(err, user) {
+                        if(err) throw err;
+
+                        if(!user) {
+                            var newUser = User();
+
+                            newUser.name = payload['name'];
+                            newUser.email = payload['email'];
+
+                            newUser.save(function(err) {
+                                if(err) {
+                                    res.json({ success: false, message: err });
+                                } else {
+                                    var token = jwt.sign({ email: user.email }, secret, { expiresIn: '24h' }); 
+                                    res.json({ success: true, message: 'User authenticated!', token: token });        
+                                }
+                            })
+                        } else {
+                            var token = jwt.sign({ email: user.email }, secret, { expiresIn: '24h' }); 
+                            res.json({ success: true, message: 'User authenticated!', token: token });
+                        }
+                    })
+                }
+                // If request specified a G Suite domain:
+                // const domain = payload['hd'];
+            }
+            
+            verify().catch(console.error);
+        }
     });
 
     router.post('/checkmobile', function(req, res) {
