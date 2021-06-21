@@ -109,7 +109,7 @@ module.exports = function(router){
                                 if(err) {
                                     res.json({ success: false, message: err });
                                 } else {
-                                    var token = jwt.sign({ email: user.email }, secret, { expiresIn: '24h' }); 
+                                    var token = jwt.sign({ email: newUser.email }, secret, { expiresIn: '24h' }); 
                                     res.json({ success: true, message: 'User authenticated!', token: token });        
                                 }
                             })

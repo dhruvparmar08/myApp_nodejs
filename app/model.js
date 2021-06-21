@@ -61,7 +61,7 @@ var UserSchema = new Schema({
 
     name : { type: String, required: true, validate: nameValidator },
     email : { type: String, required: true, lowercase:true, unique: true, validate: emailValidator },
-    mobile : { type: String },
+    mobile : { type: Number, unique: false },
     gender : { type: String },
     password : { type: String, select: false },
     address : { type: String },
