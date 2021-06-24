@@ -52,11 +52,12 @@ module.exports = function(router){
 
     //http://localhost:8080/api/authenticate
     router.post('/authenticate', function(req, res){
-        User.findOne({ $or: [{email: req.body.email}, { mobile: req.body.mobile}] }).select('email password').exec(function(err, user) {
+        User.findOne({ $or: [{email: req.body.email}, { mobile: req.body.mobile}] }).select('email mobile password').exec(function(err, user) {
             if (err) throw err;
             else {
+                console.log(user);
                 if (!user) {
-                    res.json({ success: false, message: 'E-mail not found' });
+                    res.json({ success: false, message: 'User not found' });
                 } else if (user) {
                     if (!req.body.password) {
                         res.json({ success: false, message: 'No password provided' });
@@ -100,19 +101,7 @@ module.exports = function(router){
                         if(err) throw err;
 
                         if(!user) {
-                            var newUser = User();
-
-                            newUser.name = payload['name'];
-                            newUser.email = payload['email'];
-
-                            newUser.save(function(err) {
-                                if(err) {
-                                    res.json({ success: false, message: err });
-                                } else {
-                                    var token = jwt.sign({ email: newUser.email }, secret, { expiresIn: '24h' }); 
-                                    res.json({ success: true, message: 'User authenticated!', token: token });        
-                                }
-                            })
+                            res.json({ success: false, auth: 'google', message: 'User not found', data: {email: useremail, name: payload['name']} });
                         } else {
                             var token = jwt.sign({ email: user.email }, secret, { expiresIn: '24h' }); 
                             res.json({ success: true, message: 'User authenticated!', token: token });
