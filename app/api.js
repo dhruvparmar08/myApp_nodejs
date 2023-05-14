@@ -140,6 +140,18 @@ module.exports = function(router){
         })
     });
 
+    router.post('/checkemailaddress', function(req, res) {
+        User.findOne({ email: req.body.email }).select('email').exec(function(err, user) {
+            if (err) throw err;
+
+            if (!user) {
+                res.json({ success: false, message: 'User not found' });
+            } else {
+                res.json({ success: true, message: 'User found' }); 
+            }
+        })
+    });
+
     router.put('/savepassword', function(req, res) {
         User.findOne({ email: req.body.email }).select('email password').exec(function(err, user) {
             if (err) throw err;

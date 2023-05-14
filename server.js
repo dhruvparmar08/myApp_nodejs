@@ -20,7 +20,7 @@ app.use('/api',appRoutes);
 
 
 
-mongoose.connect('mongodb+srv://mongodbuser:mongodbuser@cluster0-mvmyh.mongodb.net/test?retryWrites=true&w=majority', { useNewUrlParser: true,  useCreateIndex: true, useUnifiedTopology: true });
+mongoose.connect('mongodb+srv://Mongodbuser:Mongodbuser@cluster0.j9feey2.mongodb.net/?retryWrites=true&w=majority', { useNewUrlParser: true,  useCreateIndex: true, useUnifiedTopology: true });
 //mongoose.connect('mongodb://localhost:27017/test', {useNewUrlParser: true,  useCreateIndex: true, useUnifiedTopology: true});
 var conn = mongoose.connection;
 
